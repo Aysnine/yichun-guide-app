@@ -1,0 +1,24 @@
+{
+  "light": {
+    "style": "black",
+    "color": "#181818",
+    "bgColor": "#ffffff",
+    "homeIcon": "/images/i1s.png",
+    "homeSelectedIcon": "/images/i1.png",
+    "specialtyIcon": "/images/i2s.png",
+    "specialtySelectedIcon": "/images/i2.png",
+    "mineIcon": "/images/i3s.png",
+    "mineSelectedIcon": "/images/i3.png"
+  },
+  "dark": {
+    "style": "white",
+    "color": "#ffffff",
+    "bgColor": "#181818",
+    "homeIcon": "/images/i1s.png",
+    "homeSelectedIcon": "/images/i1.png",
+    "specialtyIcon": "/images/i2s.png",
+    "specialtySelectedIcon": "/images/i2.png",
+    "mineIcon": "/images/i3s.png",
+    "mineSelectedIcon": "/images/i3.png"
+  }
+}

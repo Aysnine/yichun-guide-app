@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "wip-banner": "/components/wip-banner/index"
+  }
+}
