@@ -1,9 +1,145 @@
-import { defineComponent, ref } from '@vue-mini/core';
+import {
+  definePage,
+  onShareAppMessage,
+  onShareTimeline,
+  ref,
+} from '@vue-mini/core';
 
-defineComponent(() => {
-  const greeting = ref('欢迎使用 Vue Mini');
+type Collection<T> = T & { _id: string };
 
-  return {
-    greeting,
-  };
-});
+export type Specialty = Collection<{
+  name: string;
+  highlight: string;
+  desc: string;
+  images: {
+    url: string;
+  }[];
+  priority: number | null;
+}>;
+
+definePage(
+  (query) => {
+    const launchOptions = wx.getLaunchOptionsSync();
+    const isSinglePage = launchOptions.scene === 1154;
+
+    const autoJumpTo = query.to;
+
+    if (autoJumpTo) {
+      void wx.navigateTo({
+        url: `/pages/specialty-detail/index?specialtyId=${autoJumpTo}`,
+      });
+    }
+
+    onShareAppMessage(() => {
+      return {
+        title: '🌲🐿️伊春今日优质特产🫐🦌',
+      };
+    });
+    onShareTimeline(() => {
+      return {
+        title: '🌲🐿️伊春今日优质特产🫐🦌',
+      };
+    });
+
+    const specialties = ref<Specialty[]>([]);
+    const refreshTriggered = ref(false);
+
+    const db = wx.cloud.database();
+
+    let fetching = false;
+    fetching = true;
+    void getData().then((data) => {
+      specialties.value = data;
+      fetching = false;
+    });
+
+    async function getData() {
+      const MAX_PAGE = 1; // TODO update if more data
+
+      const results = await Promise.all(
+        Array.from({ length: MAX_PAGE }).map((_, i) =>
+          db
+            .collection('Specialty')
+            .skip(i * 20)
+            .limit(20)
+            .get()
+            .then((data) => {
+              return (data.data as Specialty[]).toSorted(
+                (a, b) => (a.priority ?? 0) - (b.priority ?? 0),
+              );
+            }),
+        ),
+      );
+
+      return results.flat();
+    }
+
+    function onRefresh() {
+      console.log('onRefresh');
+      if (fetching) {
+        return;
+      }
+      refreshTriggered.value = true;
+
+      // TODO can't restore refresher
+      setTimeout(() => {
+        getData()
+          .then((data) => {
+            specialties.value = data;
+            fetching = false;
+            refreshTriggered.value = false;
+          })
+          .catch(() => {
+            fetching = false;
+            refreshTriggered.value = false;
+          });
+      }, 1000);
+    }
+
+    function onClickSpecialty(event: {
+      currentTarget: { dataset: { specialtyId: string } };
+    }) {
+      const specialtyId = event.currentTarget?.dataset.specialtyId;
+
+      void wx.navigateTo({
+        url: `/pages/specialty-detail/index?specialtyId=${specialtyId}`,
+      });
+    }
+
+    function onCallPhone(event: {
+      currentTarget: { dataset: { phone: string } };
+    }) {
+      const phone = event.currentTarget?.dataset.phone;
+      void wx.makePhoneCall({
+        phoneNumber: phone,
+      });
+    }
+
+    function onContact() {
+      void wx.navigateTo({
+        url: '/pages/contact/index',
+      });
+    }
+
+    return {
+      isSinglePage,
+
+      // specialties: specialtiesLocal,
+      specialties,
+
+      refreshTriggered,
+      onRefresh,
+      onPulling: () => console.log('onPulling'),
+      onRestore: () => console.log('onRestore'),
+      onAbort: () => console.log('onAbort'),
+
+      onClickSpecialty,
+      onCallPhone,
+      onContact,
+    };
+  },
+  {
+    canShareToOthers: true,
+    canShareToTimeline: true,
+  },
+);

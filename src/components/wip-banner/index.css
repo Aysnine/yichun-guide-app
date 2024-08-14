@@ -1,15 +1,11 @@
-:host {
-  display: block;
-  text-align: center;
-}
-
 .wip {
   height: 400px;
   margin: 24px;
-  margin-top: 120px;
+  margin-top: 220px;
   color: #2c3e50;
   font-size: 32px;
   font-weight: bold;
+  text-align: center;
 }
 
 @media (prefers-color-scheme: dark) {

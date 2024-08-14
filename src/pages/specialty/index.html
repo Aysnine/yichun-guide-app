@@ -1,3 +1,62 @@
-<view class="specialty">
-  <wip-banner />
+<scroll-view
+  scroll-y
+  type="custom"
+  style="width: 100vw; height: 100vh"
+  TODO-refresher-enabled="{{true}}"
+  refresh-triggered="{{refreshTriggered}}"
+  refresher-threshold="{{100}}"
+  bindrefresherpulling="onPulling"
+  bindrefresherrefresh="onRefresh"
+  bindrefresherrestore="onRestore"
+  bindrefresherabort="onAbort"
+>
+  <sticky-section push-pinned-header="{{true}}">
+    <sticky-header>
+      <app-bar title="特产 • 🫐大自然的馈赠🌲">
+        <!-- TODO search -->
+        <!-- <view slot="extend">
+          <view style="padding: 8px 8px 12px">
+            <view
+              style=" display: flex; flex-direction: row; align-items: center; padding: 8px; background-color: #8888884f; opacity: 0.8; border-radius: 4px; "
+            >
+              <icon type="search" size="20" style="margin-right: 8px"></icon>
+              <input
+                class="weui-input"
+                style="flex: 1"
+                maxlength="80"
+                placeholder="搜索"
+              />
+            </view>
+          </view>
+        </view> -->
+      </app-bar>
+    </sticky-header>
+
+    <list-view>
+      <view wx:for="{{specialties}}" wx:key="_id" style="padding: 8px">
+        <view class="face" style="border-radius: 4px; overflow: hidden; display: flex; flex-direction: row" data-specialty-id="{{item._id}}" bindtap="onClickSpecialty">
+          <image src="{{item.images[0].url}}" fade-in="{{true}}" mode="aspectFill" style="width: 140px; height: 140px"></image>
+          <view style="padding: 8px; flex: 1; width: 0; height: 124px; overflow: hidden; position: relative">
+            <view class="text-main" style="font-size: 1.2rem">{{item.name}}</view>
+            <view class="text-highlight">{{item.highlight}}</view>
+            <rich-text class="text-desc" nodes="{{item.desc}}"></rich-text>
+            <view class="linear-glass" style="position: absolute; bottom: -1px; left: 0; right: 0; height: 1.5rem"></view>
+          </view>
+        </view>
+      </view>
+    </list-view>
+  </sticky-section>
+
+  <view style="height: 64px"></view>
+</scroll-view>
+
+<view style="position: absolute; bottom: 0; left: 0; right: 0">
+  <view wx:if="{{!isSinglePage}}" class="glass" style="height: 64px; display: flex; flex-direction: row; justify-content: center; align-items: center; padding: 0 8px">
+    <button open-type="share" style="width: auto; margin-right: 8px">转发分享</button>
+    <button type="primary" style="flex: 1" bindtap="onContact">我要下单</button>
+  </view>
+
+  <view wx:if="{{isSinglePage}}" class="glass" style="display: flex; flex-direction: row; justify-content: flex-end; align-items: center; padding: 16px 8px">
+    <view style="font-size: 1.5rem">下单，请点击下方继续👇</view>
+  </view>
 </view>

@@ -1,3 +1,87 @@
-<view class="home">
-  <view class="greeting">{{ greeting }}</view>
+<scroll-view
+  scroll-y
+  type="custom"
+  style="width: 100vw; height: 100vh"
+  TODO-refresher-enabled="{{true}}"
+  refresh-triggered="{{refreshTriggered}}"
+  refresher-threshold="{{100}}"
+  bindrefresherpulling="onPulling"
+  bindrefresherrefresh="onRefresh"
+  bindrefresherrestore="onRestore"
+  bindrefresherabort="onAbort"
+>
+  <sticky-section push-pinned-header="{{true}}">
+    <sticky-header>
+      <app-bar title="门票 • 🐿️伊春旅游胜地🌲">
+        <!-- TODO search -->
+        <!-- <view slot="extend">
+          <view style="padding: 8px 8px 12px">
+            <view
+              style=" display: flex; flex-direction: row; align-items: center; padding: 8px; background-color: #8888884f; opacity: 0.8; border-radius: 4px; "
+            >
+              <icon type="search" size="20" style="margin-right: 8px"></icon>
+              <input
+                class="weui-input"
+                style="flex: 1"
+                maxlength="80"
+                placeholder="搜索"
+              />
+            </view>
+          </view>
+        </view> -->
+      </app-bar>
+    </sticky-header>
+
+    <list-view>
+      <view wx:for="{{touristAttractions}}" wx:key="_id" style="margin-bottom: 16px">
+        <view class="face" data-tourist-attraction-id="{{item._id}}" TODO-bindtap="onClickTouristAttraction">
+          <view class="text-main" style="padding: 8px 8px 0px; font-size: 1.2rem">{{item.name}}</view>
+          <rich-text class="text-desc" style="padding: 8px 8px 0px; padding-left: 38px" nodes="{{item.desc}}"></rich-text>
+
+          <!-- TODO -->
+          <!-- <scroll-view scroll-x type="list" wx:if="{{item.points.length}}" style="display: flex; flex-direction: row; height: 80px; padding: 4px 4px 4px 8px; padding-left: 32px;">
+            <view wx:for="{{item.points}}" wx:key="pointId" style="margin-right: 4px;">
+              <view style="background-color: #6666665f; border-radius: 4px; width: 100px; height: 70px; position: relative; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden;">
+                <view style="background-color: #3333335f; padding-left: 4px;">{{item.name}}</view>
+              </view>
+            </view>
+          </scroll-view> -->
+
+          <view wx:if="{{item.tickets.length}}" style="display: flex; flex-direction: column; align-items: stretch; padding: 4px 0; padding-left: 24px">
+            <view wx:for="{{item.tickets}}" wx:key="index" style="margin-bottom: 4px; width: auto; padding: 2px 8px">
+              <view style="display: flex; flex-direction: row; align-items: stretch">
+                <view style="width: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 32px; background-color: #ff850222; padding: 8px 0">
+                  <view class="text-highlight" style="display: inline-flex; flex-direction: row; align-items: baseline">
+                    <view style="opacity: 0.5">¥</view>
+                    <view wx:if="{{item.discount}}" style="font-size: 1.5rem; font-weight: bold">{{item.discount}}</view>
+                    <view wx:else style="font-size: 1.5rem; font-weight: bold">{{item.price}}</view>
+                  </view>
+                  <view wx:if="{{item.discount && item.price}}" class="text-highlight">原价¥{{item.price}}</view>
+                </view>
+                <view style="flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 32px; background-color: #ff850211">
+                  <view style="padding: 4px 8px">
+                    <view class="text-secondary" style="font-size: 1.1rem">{{item.name}}</view>
+                    <rich-text class="text-desc" nodes="{{item.desc}}"></rich-text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </list-view>
+  </sticky-section>
+
+  <view style="height: 64px"></view>
+</scroll-view>
+
+<view style="position: absolute; bottom: 0; left: 0; right: 0">
+  <view wx:if="{{!isSinglePage}}" class="glass" style="height: 64px; display: flex; flex-direction: row; justify-content: center; align-items: center; padding: 0 8px">
+    <button open-type="share" style="width: auto; margin-right: 8px">转发分享</button>
+    <button type="primary" style="flex: 1" bindtap="onContact">我要预订</button>
+  </view>
+
+  <view wx:if="{{isSinglePage}}" class="glass" style="display: flex; flex-direction: row; justify-content: flex-end; align-items: center; padding: 16px 8px">
+    <view style="font-size: 1.5rem">预订，请点击下方继续👇</view>
+  </view>
 </view>

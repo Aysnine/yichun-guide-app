@@ -3,16 +3,76 @@ page {
   font-size: 28px;
   font-family:
     ui-sans-serif,
-    system-ui,
     -apple-system,
     BlinkMacSystemFont,
     sans-serif;
+  background: #f0f0f0;
+}
+
+.face {
+  color: #181818;
   background: #fff;
+}
+
+.glass {
+  color: #181818;
+  background: #f0f0f099;
+  backdrop-filter: blur(9px);
+}
+
+.linear-glass {
+  background: linear-gradient(to bottom, #fff0 0%, #fff 70%);
+}
+
+.text-main {
+  color: #181818;
+}
+
+.text-secondary {
+  color: #666;
+}
+
+.text-desc {
+  color: #999;
+}
+
+.text-highlight {
+  color: orange;
 }
 
 @media (prefers-color-scheme: dark) {
   page {
     color: #fff;
+    background: #101010;
+  }
+
+  .face {
+    color: #fff;
     background: #181818;
+  }
+
+  .glass {
+    color: #fff;
+    background: #10101099;
+  }
+
+  .linear-glass {
+    background: linear-gradient(to bottom, #18181855 0%, #181818 70%);
+  }
+
+  .text-main {
+    color: #fff;
+  }
+
+  .text-secondary {
+    color: #ccc;
+  }
+
+  .text-desc {
+    color: #999;
+  }
+
+  .text-highlight {
+    color: orange;
   }
 }

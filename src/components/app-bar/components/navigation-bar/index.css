@@ -1,0 +1,19 @@
+.back {
+  background-color: #0000004f;
+  opacity: 0.8;
+  color: #000;
+  margin-right: 32px;
+  border: 2px solid #ffffff94;
+}
+
+.back-line {
+  border-color: #ffffff94;
+}
+
+.title {
+  font-size: 1.2rem;
+}
+
+/*
+@media (prefers-color-scheme: dark) {
+} */

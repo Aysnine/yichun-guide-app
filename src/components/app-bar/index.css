@@ -1,0 +1,12 @@
+.app-bar {
+  color: #181818;
+  background: #f0f0f099;
+  backdrop-filter: blur(9px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .app-bar {
+    color: #fff;
+    background: #10101099;
+  }
+}

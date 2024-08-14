@@ -1,0 +1,16 @@
+<view
+  class="navigation-bar"
+  style="display: flex; flex-direction: row; align-items: center; height: {{navigationBarHeight}}px; padding-left: {{paddingHorizontal}}px; padding-right: {{paddingRight}}px;"
+>
+  <view wx:if="{{back}}" class="back" style="height: {{menuHeight}}px; width: {{menuHeight}}px; border-radius: {{menuHeight}}px; position: relative; overflow: hidden;" bindtap="onClickBack">
+    <view
+      class="back-line"
+      style="position: absolute; top: 35%; left: 30%; transform: translate(-50%, -50%); width: 30%; height: 0; transform: rotate(-45deg); border-top: 2px solid; border-left: 2px solid"
+    ></view>
+    <view
+      class="back-line"
+      style="position: absolute; bottom: 35%; left: 30%; transform: translate(-50%, -50%); width: 30%; height: 0; transform: rotate(45deg); border-bottom: 2px solid; border-left: 2px solid"
+    ></view>
+  </view>
+  <view class="title">{{title}}</view>
+</view>

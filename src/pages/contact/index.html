@@ -1,0 +1,27 @@
+<scroll-view scroll-y type="custom" style="width: 100vw; height: 100vh" refresher-threshold="{{100}}">
+  <sticky-section push-pinned-header="{{true}}">
+    <sticky-header>
+      <app-bar title="联系我" back="{{true}}" />
+    </sticky-header>
+
+    <view>
+      <view class="text-main" style="padding: 16px 8px 8px">方式一：关注公众号，私信我。长按二维码进入公众号（长按后，请耐心等待几秒，才会弹出“识别二维码”）。</view>
+      <view style="display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 8px 8px 24px">
+        <image style="width: 160px" src="{{openWxQrCodeUrl}}" mode="widthFix" show-menu-by-longpress="{{true}}" />
+        <button type="primary" style="margin-top: 8px" bindtap="onClickOpenWx">去关注</button>
+      </view>
+
+      <view class="text-main" style="padding: 16px 8px 8px">方式二：加我微信。长按下方二维码加好友（长按后，请耐心等待几秒，才会弹出“识别二维码”）。</view>
+      <view style="display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 8px 8px 24px">
+        <image style="width: 160px" src="{{mySelfWxQrCodeUrl}}" mode="widthFix" show-menu-by-longpress="{{true}}" />
+
+        <button type="primary" style="margin-top: 8px" bindtap="onClickMySelfWx">去加微信</button>
+      </view>
+
+      <view class="text-main" style="padding: 16px 8px 8px">方式三：</view>
+      <view style="display: flex; justify-content: center; padding: 16px 16px">
+        <button type="primary" style="flex: 1" bindtap="onCallPhone">电话联系</button>
+      </view>
+    </view>
+  </sticky-section>
+</scroll-view>

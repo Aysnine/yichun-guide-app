@@ -1,0 +1,44 @@
+<scroll-view scroll-y type="custom" style="width: 100vw; height: 100vh">
+  <sticky-section push-pinned-header="{{true}}">
+    <sticky-header>
+      <app-bar back="{{isSinglePage ? false : true}}"></app-bar>
+    </sticky-header>
+
+    <view>
+      <swiper indicator-dots="{{true}}" autoplay="{{true}}" interval="{{3000}}" duration="{{500}}" style="height: 40vh; max-height: 640px">
+        <block wx:for="{{imageUrls}}" wx:key="*this">
+          <swiper-item>
+            <view data-index="{{index}}" bindtap="onPreviewImage">
+              <image src="{{item}}" mode="aspectFit" style="width: 100vw; height: 40vh; max-height: 640px" />
+            </view>
+          </swiper-item>
+        </block>
+      </swiper>
+    </view>
+
+    <view class="face" style="min-height: 50vh">
+      <view style="padding: 16px 8px 48px; border-radius: 0 0 4px 4px">
+        <view class="text-main" style="font-size: 1.2rem">{{specialty.name}}</view>
+        <view class="text-highlight">{{specialty.highlight}}</view>
+        <rich-text class="text-desc" nodes="{{specialty.desc}}"></rich-text>
+      </view>
+
+      <view style="height: 300px; width: 100%">
+        <ad unit-id="TODO"></ad>
+      </view>
+    </view>
+  </sticky-section>
+
+  <view style="height: 64px"></view>
+</scroll-view>
+
+<view style="position: absolute; bottom: 0; left: 0; right: 0">
+  <view wx:if="{{!isSinglePage}}" class="glass" style="height: 64px; display: flex; flex-direction: row; justify-content: center; align-items: center; padding: 0 8px">
+    <button open-type="share" style="width: auto; margin-right: 8px">转发分享</button>
+    <button type="primary" style="flex: 1" bindtap="onContact">我要下单</button>
+  </view>
+
+  <view wx:if="{{isSinglePage}}" class="glass" style="display: flex; flex-direction: row; justify-content: flex-end; align-items: center; padding: 16px 8px">
+    <view style="font-size: 1.5rem">下单，请点击下方继续👇</view>
+  </view>
+</view>

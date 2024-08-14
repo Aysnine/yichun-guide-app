@@ -1,6 +1,5 @@
 import path from 'node:path';
 import process from 'node:process';
-import { fileURLToPath } from 'node:url';
 import fs from 'fs-extra';
 import chokidar from 'chokidar';
 import babel from '@babel/core';
@@ -15,6 +14,9 @@ import terser from '@rollup/plugin-terser';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { green, bold } from 'kolorist';
+import dotEnv from 'dotenv';
+
+dotEnv.config({ path: ['.env.local', '.env'] });
 
 let topLevelJobs = [];
 let bundleJobs = [];
@@ -28,17 +30,37 @@ const terserOptions = {
   format: { comments: false },
 };
 
+async function resolvePeer(module) {
+  if (!module) return;
+
+  try {
+    const pkg = await fs.readJson(
+      path.resolve('node_modules', module, 'package.json'),
+      'utf8',
+    );
+    return pkg.peerDependencies;
+  } catch {
+    const arr = module.split('/');
+    arr.pop();
+    return resolvePeer(arr.join('/'));
+  }
+}
+
+const builtLibraries = [];
 const bundledModules = new Set();
 async function bundleModule(module) {
-  if (bundledModules.has(module)) return;
+  if (
+    bundledModules.has(module) ||
+    builtLibraries.some((library) => module.startsWith(library))
+  ) {
+    return;
+  }
   bundledModules.add(module);
 
-  const { peerDependencies } = await fs.readJson(fileURLToPath(
-    new URL(import.meta.resolve(`${module}/package.json`)),
-  ), 'utf8');
+  const peer = await resolvePeer(module);
   const bundle = await rollup({
     input: module,
-    external: peerDependencies ? Object.keys(peerDependencies) : undefined,
+    external: peer ? Object.keys(peer) : undefined,
     plugins: [
       commonjs(),
       replace({
@@ -58,14 +80,14 @@ async function bundleModule(module) {
   });
 }
 
-function traverseAST(ast, onlyBabel = false) {
+function traverseAST(ast, babelOnly = false) {
   traverse.default(ast, {
     CallExpression({ node }) {
       if (
         node.callee.name !== 'require' ||
         !t.isStringLiteral(node.arguments[0]) ||
         node.arguments[0].value.startsWith('.') ||
-        (onlyBabel && !node.arguments[0].value.startsWith('@babel/runtime'))
+        (babelOnly && !node.arguments[0].value.startsWith('@babel/runtime'))
       ) {
         return;
       }
@@ -77,18 +99,18 @@ function traverseAST(ast, onlyBabel = false) {
 }
 
 async function buildComponentLibrary(name) {
-  const pkgPath = fileURLToPath(
-    new URL(import.meta.resolve(`${name}/package.json`)),
+  const libPath = path.resolve('node_modules', name);
+  const { miniprogram } = await fs.readJson(
+    path.join(libPath, 'package.json'),
+    'utf8',
   );
-  const modulePath = path.dirname(pkgPath);
-  const { miniprogram } = await fs.readJson(pkgPath, 'utf8');
 
   let source = '';
   if (miniprogram) {
-    source = path.join(modulePath, miniprogram);
+    source = path.join(libPath, miniprogram);
   } else {
     try {
-      const dist = path.join(modulePath, 'miniprogram_dist');
+      const dist = path.join(libPath, 'miniprogram_dist');
       const stats = await fs.stat(dist);
       if (stats.isDirectory()) {
         source = dist;
@@ -100,6 +122,7 @@ async function buildComponentLibrary(name) {
 
   if (!source) return;
 
+  builtLibraries.push(name);
   const destination = path.resolve('dist', 'miniprogram_npm', name);
   await fs.copy(source, destination);
 

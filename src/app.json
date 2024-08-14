@@ -1,15 +1,23 @@
 {
   "darkmode": true,
   "themeLocation": "theme.json",
-  "pages": ["pages/home/index", "pages/specialty/index", "pages/mine/index"],
-  "window": {
-    "navigationBarBackgroundColor": "@bgColor",
-    "navigationBarTextStyle": "@style",
-    "navigationBarTitleText": "yichun-guide-app",
-    "backgroundColor": "@bgColor",
-    "backgroundColorTop": "@bgColor",
-    "backgroundColorBottom": "@bgColor"
+  "style": "v2",
+  "renderer": "skyline",
+  "rendererOptions": {
+    "skyline": {
+      "disableABTest": true,
+      "defaultDisplayBlock": true,
+      "defaultContentBox": true
+    }
   },
+  "pages": [
+    "pages/home/index",
+    "pages/tourist-attraction-detail/index",
+    "pages/specialty/index",
+    "pages/specialty-detail/index",
+    "pages/mine/index",
+    "pages/contact/index"
+  ],
   "tabBar": {
     "color": "@color",
     "selectedColor": "@color",
@@ -17,7 +25,7 @@
     "borderStyle": "@style",
     "list": [
       {
-        "text": "游玩",
+        "text": "景点",
         "pagePath": "pages/home/index",
         "iconPath": "@homeIcon",
         "selectedIconPath": "@homeSelectedIcon"
@@ -27,15 +35,16 @@
         "pagePath": "pages/specialty/index",
         "iconPath": "@specialtyIcon",
         "selectedIconPath": "@specialtySelectedIcon"
-      },
-      {
-        "text": "我的",
-        "pagePath": "pages/mine/index",
-        "iconPath": "@mineIcon",
-        "selectedIconPath": "@mineSelectedIcon"
       }
-    ]
+    ],
+    "TODO": {
+      "text": "用户中心",
+      "pagePath": "pages/mine/index",
+      "iconPath": "@mineIcon",
+      "selectedIconPath": "@mineSelectedIcon"
+    }
   },
   "sitemapLocation": "sitemap.json",
-  "lazyCodeLoading": "requiredComponents"
+  "lazyCodeLoading": "requiredComponents",
+  "componentFramework": "glass-easel"
 }

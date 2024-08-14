@@ -1,5 +1,6 @@
 {
   "usingComponents": {
+    "app-bar": "/components/app-bar/index",
     "wip-banner": "/components/wip-banner/index"
   }
 }
