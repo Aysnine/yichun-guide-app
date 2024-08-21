@@ -1,0 +1,81 @@
+.tab-bar {
+  pointer-events: auto;
+  position: absolute;
+  height: 100px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tab-bar-border {
+  background-color: rgba(0, 0, 0, 0.33);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 1px;
+  transform: scaleY(0.5);
+}
+
+.tab-bar-item {
+  flex: 1;
+  width: 50%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.tab-bar-item .tab-bar-icon {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.tab-bar-item.selected .tab-bar-icon {
+  flex: 1;
+  padding: 4px 0 0;
+}
+
+.tab-bar-item .tab-bar-icon .tab-bar-icon-image {
+  height: 60%;
+}
+
+.tab-bar-item.selected .tab-bar-icon .tab-bar-icon-image {
+  height: 100%;
+}
+
+.tab-bar-item .tab-bar-text {
+  font-size: 0.9rem;
+}
+
+/* COPY */
+
+.face {
+  color: #181818;
+  background: #fff;
+}
+
+.glass {
+  color: #181818;
+  background: #f0f0f099;
+  backdrop-filter: blur(9px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .face {
+    color: #fff;
+    background: #181818;
+  }
+
+  .glass {
+    color: #fff;
+    background: #10101099;
+  }
+}

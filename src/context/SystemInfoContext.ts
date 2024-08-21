@@ -1,6 +1,7 @@
 import { inject, provide, reactive } from '@vue-mini/core';
 
 export type SystemInfoContextType = {
+  theme: 'light' | 'dark';
   model: string;
   statusBarHeight: number;
   navigationBarHeight: number;
@@ -13,6 +14,7 @@ const systemInfoContextSymbol = Symbol('systemInfo');
 
 export function provideSystemInfo() {
   const systemInfo = reactive<SystemInfoContextType>({
+    theme: 'light',
     model: '',
     statusBarHeight: 0,
     navigationBarHeight: 0,
@@ -22,6 +24,7 @@ export function provideSystemInfo() {
   });
 
   const res = wx.getSystemInfoSync();
+  systemInfo.theme = res.theme ?? 'light';
   const { model, statusBarHeight, windowWidth } = res;
   const rect = wx.getMenuButtonBoundingClientRect();
   systemInfo.model = model;

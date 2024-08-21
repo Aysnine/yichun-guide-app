@@ -19,6 +19,7 @@
     "pages/contact/index"
   ],
   "tabBar": {
+    "custom": true,
     "color": "@color",
     "selectedColor": "@color",
     "backgroundColor": "@bgColor",

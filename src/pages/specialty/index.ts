@@ -2,6 +2,7 @@ import {
   definePage,
   onShareAppMessage,
   onShareTimeline,
+  onShow,
   ref,
 } from '@vue-mini/core';
 
@@ -18,7 +19,7 @@ export type Specialty = Collection<{
 }>;
 
 definePage(
-  (query) => {
+  (query, ctx) => {
     const launchOptions = wx.getLaunchOptionsSync();
     const isSinglePage = launchOptions.scene === 1154;
 
@@ -30,6 +31,12 @@ definePage(
       });
     }
 
+    onShow(() => {
+      const tabBar = ctx.getTabBar();
+      tabBar.setData({
+        selected: 1,
+      });
+    });
     onShareAppMessage(() => {
       return {
         title: '🌲🐿️伊春今日优质特产🫐🦌',

@@ -2,6 +2,7 @@ import {
   definePage,
   onShareAppMessage,
   onShareTimeline,
+  onShow,
   ref,
 } from '@vue-mini/core';
 
@@ -42,10 +43,16 @@ export type TouristAttraction = Collection<{
 }>;
 
 definePage(
-  () => {
+  (_, ctx) => {
     const launchOptions = wx.getLaunchOptionsSync();
     const isSinglePage = launchOptions.scene === 1154;
 
+    onShow(() => {
+      const tabBar = ctx.getTabBar();
+      tabBar.setData({
+        selected: 0,
+      });
+    });
     onShareAppMessage(() => {
       return {
         title: '🌲🐿️伊春今日【门票价格】【优质特产】🫐🦌',

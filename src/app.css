@@ -9,6 +9,10 @@ page {
   background: #f0f0f0;
 }
 
+.tab-bar-height {
+  height: calc(100px + env(safe-area-inset-bottom));
+}
+
 .face {
   color: #181818;
   background: #fff;
