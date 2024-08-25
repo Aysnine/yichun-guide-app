@@ -5,7 +5,7 @@ import {
   onShareTimeline,
   ref,
 } from '@vue-mini/core';
-import type { Specialty } from '../specialty';
+import { Specialty } from '@/types';
 
 definePage(
   (query) => {

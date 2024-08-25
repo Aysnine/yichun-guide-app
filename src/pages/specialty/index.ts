@@ -5,18 +5,7 @@ import {
   onShow,
   ref,
 } from '@vue-mini/core';
-
-type Collection<T> = T & { _id: string };
-
-export type Specialty = Collection<{
-  name: string;
-  highlight: string;
-  desc: string;
-  images: {
-    url: string;
-  }[];
-  priority: number | null;
-}>;
+import { Specialty } from '@/types';
 
 definePage(
   (query, ctx) => {

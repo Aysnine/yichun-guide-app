@@ -1,5 +1,5 @@
 import { definePage, ref } from '@vue-mini/core';
-import type { TouristAttraction } from '../home';
+import { TouristAttraction } from '@/types';
 
 definePage((query) => {
   const touristAttractionId = query.touristAttractionId as string;
