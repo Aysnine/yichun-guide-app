@@ -2,6 +2,7 @@ type Collection<T> = T & { _id: string };
 
 export type TouristAttraction = Collection<{
   name: string;
+  notice: string;
   desc: string;
   pos: {
     coordinates: [number, number];

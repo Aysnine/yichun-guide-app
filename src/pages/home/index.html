@@ -35,7 +35,8 @@
     <list-view>
       <view wx:for="{{touristAttractions}}" wx:key="_id" style="margin-bottom: 16px">
         <view class="face" data-tourist-attraction-id="{{item._id}}" TODO-bindtap="onClickTouristAttraction">
-          <view class="text-main" style="padding: 8px 8px 0px; font-size: 1.2rem">{{item.name}}</view>
+          <view class="text-main" style="padding: 8px; font-size: 1.2rem">{{item.name}}</view>
+          <view wx:if="{{item.notice}}" style="padding: 8px; font-size: 1rem; color: red; background-color: #ff020222;">{{item.notice}}</view>
           <rich-text class="text-desc" style="padding: 8px 8px 0px; padding-left: 38px" nodes="{{item.desc}}"></rich-text>
 
           <!-- TODO -->
