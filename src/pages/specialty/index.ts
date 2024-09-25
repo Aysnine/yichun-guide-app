@@ -50,24 +50,23 @@ definePage(
     });
 
     async function getData() {
-      const MAX_PAGE = 1; // TODO update if more data
+      const { total } = await db.collection('Specialty').count();
+      const pages = Math.ceil(total / 20);
 
       const results = await Promise.all(
-        Array.from({ length: MAX_PAGE }).map((_, i) =>
+        Array.from({ length: pages }).map((_, i) =>
           db
             .collection('Specialty')
             .skip(i * 20)
             .limit(20)
             .get()
-            .then((data) => {
-              return (data.data as Specialty[]).toSorted(
-                (a, b) => (a.priority ?? 0) - (b.priority ?? 0),
-              );
-            }),
+            .then((data) => data.data as Specialty[]),
         ),
       );
 
-      return results.flat();
+      return results
+        .flat()
+        .toSorted((a, b) => (a.priority ?? 0) - (b.priority ?? 0));
     }
 
     function onRefresh() {

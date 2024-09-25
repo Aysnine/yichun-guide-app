@@ -42,32 +42,32 @@ definePage(
     });
 
     async function getData() {
-      const MAX_PAGE = 2; // TODO update if more data
+      const { total } = await db.collection('TouristAttraction').count();
+      const pages = Math.ceil(total / 20);
 
       const results = await Promise.all(
-        Array.from({ length: MAX_PAGE }).map((_, i) =>
+        Array.from({ length: pages }).map((_, i) =>
           db
             .collection('TouristAttraction')
             .skip(i * 20)
             .limit(20)
             .get()
-            .then((data) => {
-              return (data.data as TouristAttraction[])
-                .toSorted((a, b) => (a.priority ?? 0) - (b.priority ?? 0))
-                .map((i) => ({
-                  ...i,
-                  points: i.points.toSorted(
-                    (a, b) => (a.priority ?? 0) - (b.priority ?? 0),
-                  ),
-                  tickets: i.tickets.toSorted(
-                    (a, b) => (a.priority ?? 0) - (b.priority ?? 0),
-                  ),
-                }));
-            }),
+            .then((data) => data.data as TouristAttraction[]),
         ),
       );
 
-      return results.flat();
+      return results
+        .flat()
+        .toSorted((a, b) => (a.priority ?? 0) - (b.priority ?? 0))
+        .map((i) => ({
+          ...i,
+          points: i.points.toSorted(
+            (a, b) => (a.priority ?? 0) - (b.priority ?? 0),
+          ),
+          tickets: i.tickets.toSorted(
+            (a, b) => (a.priority ?? 0) - (b.priority ?? 0),
+          ),
+        }));
     }
 
     function onRefresh() {
