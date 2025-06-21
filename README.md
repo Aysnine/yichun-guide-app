@@ -2,6 +2,10 @@
 
 **使用 vue-mini 开发，使用 create-vue-mini 创建。使用 Skyline 渲染，支持深色模式，数据库和文件存储使用微信小程序自带的云开发。**
 
+## 版本说明
+
+⚠️ **重要提示**：截止到 commit `549eaa09c317298a79540c5ec75138e7bf4e7fa2` (tag: `v0.0.0-wechat-cloud`)，本项目采用的是微信云开发环境；之后的版本改为传统的服务器 RESTFUL API。
+
 扫码体验：
 
 ![小程序码](./qrcode.jpg)
@@ -14,27 +18,17 @@
 
 更多信息请访问官方文档：[vuemini.org](https://vuemini.org)
 
-## 数据库集合
+## 数据模型
 
-- 景点：`TouristAttraction`
+- 景点：`Attraction`
+- 景点门票：`AttractionTicket`
 - 特产：`Specialty`
-
-权限选择“自定义安全规则”，设置为：
-
-```json
-{
-  "read": true,
-  "write": false
-}
-```
 
 ## 文件存储结构
 
 - `/assets/`：存放固定的图片资源
-- `/tourist-attraction/:id/`：存放景点的图片
+- `/attraction/:id/`：存放景点的图片
 - `/specialty/:id/`：存放特产的图片
-
-权限选择“所有用户可读”。
 
 ## 设置环境变量
 

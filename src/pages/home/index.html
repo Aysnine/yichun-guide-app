@@ -33,11 +33,11 @@
     </sticky-header>
 
     <list-view>
-      <view wx:for="{{touristAttractions}}" wx:key="_id" style="margin-bottom: 16px">
-        <view class="face" data-tourist-attraction-id="{{item._id}}" TODO-bindtap="onClickTouristAttraction">
+      <view wx:for="{{touristAttractions}}" wx:key="id" style="margin-bottom: 16px">
+        <view class="face" data-tourist-attraction-id="{{item.id}}" TODO-bindtap="onClickTouristAttraction">
           <view class="text-main" style="padding: 8px; font-size: 1.2rem">{{item.name}}</view>
-          <view wx:if="{{item.notice}}" style="padding: 8px; font-size: 1rem; color: red; background-color: #ff020222;">{{item.notice}}</view>
-          <rich-text class="text-desc" style="padding: 8px 8px 0px; padding-left: 38px" nodes="{{item.desc}}"></rich-text>
+          <!-- <view wx:if="{{item.notice}}" style="padding: 8px; font-size: 1rem; color: red; background-color: #ff020222;">{{item.notice}}</view> -->
+          <rich-text class="text-desc" style="padding: 8px 8px 0px; padding-left: 38px" nodes="{{item.description}}"></rich-text>
 
           <!-- TODO -->
           <!-- <scroll-view scroll-x type="list" wx:if="{{item.points.length}}" style="display: flex; flex-direction: row; height: 80px; padding: 4px 4px 4px 8px; padding-left: 32px;">
@@ -62,7 +62,7 @@
                 <view style="flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 32px; background-color: #ff850211">
                   <view style="padding: 4px 8px">
                     <view class="text-secondary" style="font-size: 1.1rem">{{item.name}}</view>
-                    <rich-text class="text-desc" nodes="{{item.desc}}"></rich-text>
+                    <rich-text class="text-desc" nodes="{{item.description}}"></rich-text>
                   </view>
                 </view>
               </view>

@@ -20,7 +20,7 @@
       <view style="padding: 16px 8px 48px; border-radius: 0 0 4px 4px">
         <view class="text-main" style="font-size: 1.2rem">{{specialty.name}}</view>
         <view class="text-highlight">{{specialty.highlight}}</view>
-        <rich-text class="text-desc" nodes="{{specialty.desc}}"></rich-text>
+        <rich-text wx:if="{{specialty.description}}" class="text-desc" nodes="{{specialty.description}}"></rich-text>
       </view>
 
       <view style="height: 300px; width: 100%">

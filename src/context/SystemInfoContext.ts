@@ -8,6 +8,8 @@ export type SystemInfoContextType = {
   appBarHeight: number;
   windowWidth: number;
   horizontalPadding: number;
+  env: 'develop' | 'trial' | 'release';
+  onlineVersion: string | null;
 };
 
 const systemInfoContextSymbol = Symbol('systemInfo');
@@ -21,10 +23,14 @@ export function provideSystemInfo() {
     appBarHeight: 0,
     windowWidth: 0,
     horizontalPadding: 0,
+    env: 'develop',
+    onlineVersion: null,
   });
 
   const res = wx.getSystemInfoSync();
+
   systemInfo.theme = res.theme ?? 'light';
+
   const { model, statusBarHeight, windowWidth } = res;
   const rect = wx.getMenuButtonBoundingClientRect();
   systemInfo.model = model;
@@ -36,7 +42,13 @@ export function provideSystemInfo() {
   systemInfo.windowWidth = windowWidth;
   systemInfo.horizontalPadding = windowWidth - rect.right;
 
+  const accountInfo = wx.getAccountInfoSync();
+  systemInfo.env = accountInfo.miniProgram.envVersion;
+  systemInfo.onlineVersion = accountInfo.miniProgram.version;
+
   provide(systemInfoContextSymbol, systemInfo);
+
+  return systemInfo;
 }
 
 export function useSystemInfo() {

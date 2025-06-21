@@ -987,11 +987,6 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
-"@cloudbase/wx-cloud-client-sdk@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.npmmirror.com/@cloudbase/wx-cloud-client-sdk/-/wx-cloud-client-sdk-1.2.1.tgz#c2ead6d412c0501dea1dd1d246014f41bd10fc4b"
-  integrity sha512-cpV9+xiY6O/7nli+JUu5el0BpV44GEQN2msrHSupc5DEMIdfr78PbZFD/heiq8EpngLGLZiyCsOAfBrGHBtEtA==
-
 "@csstools/css-parser-algorithms@^2.7.1":
   version "2.7.1"
   resolved "https://registry.npmmirror.com/@csstools/css-parser-algorithms/-/css-parser-algorithms-2.7.1.tgz#6d93a8f7d8aeb7cd9ed0868f946e46f021b6aa70"

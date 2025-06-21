@@ -5,7 +5,7 @@ import {
   onShareTimeline,
   ref,
 } from '@vue-mini/core';
-import { Specialty } from '@/types';
+import { ResponseData, Specialty } from '@/types';
 
 definePage(
   (query) => {
@@ -21,40 +21,57 @@ definePage(
       });
     }
 
-    const specialty = ref<Specialty | null>(null);
+    const specialty = ref<(Specialty & { _images: string[] }) | null>(null);
     const imageUrls = computed(() => {
-      return specialty.value?.images.map((item) => item.url) ?? [];
+      return specialty.value?._images ?? [];
     });
 
     onShareAppMessage(() => {
       return {
         title: `🌲🐿️🫐伊春特产【${specialty.value?.name}】${specialty.value?.highlight}`,
         path: '/pages/specialty/index?to=' + specialtyId,
-        imageUrl: specialty.value?.images.at(0)?.url,
+        imageUrl: specialty.value?._images.at(0),
       };
     });
     onShareTimeline(() => {
       return {
         title: `🌲🐿️🫐伊春特产【${specialty.value?.name}】${specialty.value?.highlight}`,
         query: 'back=list&specialtyId=' + specialtyId,
-        imageUrl: specialty.value?.images.at(0)?.url,
+        imageUrl: specialty.value?._images.at(0),
       };
     });
-
-    const db = wx.cloud.database();
 
     void getData().then((data) => {
       specialty.value = data;
     });
 
     async function getData() {
-      return db
-        .collection('Specialty')
-        .doc(specialtyId)
-        .get()
-        .then((data) => {
-          return data.data as Specialty;
+      const res = await new Promise<
+        ResponseData<Specialty & { _images: string[] }>
+      >((resolve, reject) => {
+        wx.request<ResponseData<Specialty & { _images: string[] }>>({
+          url: `https://yichun-guide-server.softfunny.com/api/specialties/${specialtyId}`,
+          method: 'GET',
+          success: (res) => {
+            const data = res.data;
+            function storageUrl(url: string) {
+              if (!url) {
+                return '';
+              }
+              const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+              return `https://yichun-guide-server.softfunny.com/storage${cleanUrl}`;
+            }
+            data.data._images = data.data.images.map((image) =>
+              storageUrl(image),
+            );
+            resolve(data);
+          },
+          fail: (err) => {
+            reject(new Error(err.errMsg));
+          },
         });
+      });
+      return res.data;
     }
 
     function onCallPhone(event: {

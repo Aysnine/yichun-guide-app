@@ -5,7 +5,7 @@ import {
   onShow,
   ref,
 } from '@vue-mini/core';
-import { Specialty } from '@/types';
+import { ResponseData, Specialty } from '@/types';
 
 definePage(
   (query, ctx) => {
@@ -40,33 +40,43 @@ definePage(
     const specialties = ref<Specialty[]>([]);
     const refreshTriggered = ref(false);
 
-    const db = wx.cloud.database();
-
     let fetching = false;
     fetching = true;
     void getData().then((data) => {
-      specialties.value = data;
+      specialties.value = data.data;
       fetching = false;
     });
 
     async function getData() {
-      const { total } = await db.collection('Specialty').count();
-      const pages = Math.ceil(total / 20);
+      const res = await new Promise<ResponseData<Specialty[]>>(
+        (resolve, reject) => {
+          wx.request<ResponseData<Specialty[]>>({
+            url: 'https://yichun-guide-server.softfunny.com/api/specialties',
+            method: 'GET',
+            success: (res) => {
+              const data = res.data;
+              function storageUrl(url: string) {
+                if (!url) {
+                  return '';
+                }
+                const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+                return `https://yichun-guide-server.softfunny.com/storage${cleanUrl}`;
+              }
 
-      const results = await Promise.all(
-        Array.from({ length: pages }).map((_, i) =>
-          db
-            .collection('Specialty')
-            .skip(i * 20)
-            .limit(20)
-            .get()
-            .then((data) => data.data as Specialty[]),
-        ),
+              data.data = data.data.map((item) => ({
+                ...item,
+                _images: item.images.map((image) => storageUrl(image)),
+              }));
+              resolve(data);
+            },
+            fail: (err) => {
+              reject(new Error(err.errMsg));
+            },
+          });
+        },
       );
 
-      return results
-        .flat()
-        .toSorted((a, b) => (a.priority ?? 0) - (b.priority ?? 0));
+      return res;
     }
 
     function onRefresh() {
@@ -80,7 +90,7 @@ definePage(
       setTimeout(() => {
         getData()
           .then((data) => {
-            specialties.value = data;
+            specialties.value = data.data;
             fetching = false;
             refreshTriggered.value = false;
           })

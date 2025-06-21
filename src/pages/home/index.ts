@@ -5,7 +5,7 @@ import {
   onShow,
   ref,
 } from '@vue-mini/core';
-import { TouristAttraction } from '@/types';
+import { Attraction, ResponseData } from '@/types';
 
 definePage(
   (_, ctx) => {
@@ -29,10 +29,8 @@ definePage(
       };
     });
 
-    const touristAttractions = ref<TouristAttraction[]>([]);
+    const touristAttractions = ref<Attraction[]>([]);
     const refreshTriggered = ref(false);
-
-    const db = wx.cloud.database();
 
     let fetching = false;
     fetching = true;
@@ -42,32 +40,22 @@ definePage(
     });
 
     async function getData() {
-      const { total } = await db.collection('TouristAttraction').count();
-      const pages = Math.ceil(total / 20);
-
-      const results = await Promise.all(
-        Array.from({ length: pages }).map((_, i) =>
-          db
-            .collection('TouristAttraction')
-            .skip(i * 20)
-            .limit(20)
-            .get()
-            .then((data) => data.data as TouristAttraction[]),
-        ),
+      const res = await new Promise<ResponseData<Attraction[]>>(
+        (resolve, reject) => {
+          wx.request<ResponseData<Attraction[]>>({
+            url: 'https://yichun-guide-server.softfunny.com/api/attractions?includeTickets=true',
+            method: 'GET',
+            success: (res) => {
+              resolve(res.data);
+            },
+            fail: (err) => {
+              reject(new Error(err.errMsg));
+            },
+          });
+        },
       );
 
-      return results
-        .flat()
-        .toSorted((a, b) => (a.priority ?? 0) - (b.priority ?? 0))
-        .map((i) => ({
-          ...i,
-          points: i.points.toSorted(
-            (a, b) => (a.priority ?? 0) - (b.priority ?? 0),
-          ),
-          tickets: i.tickets.toSorted(
-            (a, b) => (a.priority ?? 0) - (b.priority ?? 0),
-          ),
-        }));
+      return res.data;
     }
 
     function onRefresh() {

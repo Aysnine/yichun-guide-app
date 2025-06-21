@@ -36,12 +36,6 @@
         "pagePath": "pages/specialty/index",
         "iconPath": "@specialtyIcon",
         "selectedIconPath": "@specialtySelectedIcon"
-      },
-      {
-        "text": "我的",
-        "pagePath": "pages/mine/index",
-        "iconPath": "@mineIcon",
-        "selectedIconPath": "@mineSelectedIcon"
       }
     ]
   },

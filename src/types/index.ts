@@ -1,46 +1,38 @@
-type Collection<T> = T & { _id: string };
+export type ResponseData<T> = {
+  success: boolean;
+  timestamp: number;
+  data: T;
+};
 
-export type TouristAttraction = Collection<{
+export type Attraction = {
+  id: string;
   name: string;
-  notice: string;
-  desc: string;
-  pos: {
-    coordinates: [number, number];
-    type: 'Point';
+  alias: string[];
+  images: string[];
+  description: string;
+  location: {
+    latitude: number;
+    longitude: number;
+    fullAddress: string;
   };
-  images: {
-    url: string;
-  }[];
-  points: {
-    name: string;
-    desc: string;
-    pos: {
-      coordinates: [number, number];
-      type: 'Point';
-    };
-    images: {
-      url: string;
-    }[];
-    pointId: string;
-    priority: number | null;
-  }[];
-  tickets: {
-    name: string;
-    price: number;
-    discount: number | null;
-    desc: string;
-    points?: string[];
-    priority: number | null;
-  }[];
   priority: number | null;
-}>;
+};
 
-export type Specialty = Collection<{
+export type Specialty = {
+  id: string;
   name: string;
-  highlight: string;
-  desc: string;
-  images: {
-    url: string;
-  }[];
+  highlight: string | null;
+  description: string;
+  images: string[];
   priority: number | null;
-}>;
+};
+
+export type AttractionTicket = {
+  id: string;
+  attractionId: string;
+  name: string;
+  price: number;
+  discount: number | null;
+  description: string;
+  priority: number | null;
+};
