@@ -4,6 +4,14 @@ export type ResponseData<T> = {
   data: T;
 };
 
+export type AppFlag = {
+  appName: string;
+  appType: 'wechat';
+  appEnv: string;
+  appVersion: string;
+  features: { isCustomServer: boolean; privateInfusion: boolean };
+};
+
 export type Attraction = {
   id: string;
   name: string;

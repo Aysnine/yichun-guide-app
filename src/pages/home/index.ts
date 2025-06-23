@@ -6,6 +6,7 @@ import {
   ref,
 } from '@vue-mini/core';
 import { Attraction, ResponseData } from '@/types';
+import { useFlags } from '@/context/FlagsContext';
 
 definePage(
   (_, ctx) => {
@@ -107,6 +108,8 @@ definePage(
     }
 
     return {
+      flags: useFlags(),
+
       isSinglePage,
 
       touristAttractions,

@@ -6,6 +6,7 @@ import {
   ref,
 } from '@vue-mini/core';
 import { ResponseData, Specialty } from '@/types';
+import { useFlags } from '@/context/FlagsContext';
 
 definePage(
   (query) => {
@@ -100,6 +101,8 @@ definePage(
     }
 
     return {
+      flags: useFlags(),
+
       specialty,
       imageUrls,
       onCallPhone,

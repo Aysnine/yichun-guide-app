@@ -6,6 +6,7 @@ import {
   ref,
 } from '@vue-mini/core';
 import { ResponseData, Specialty } from '@/types';
+import { useFlags } from '@/context/FlagsContext';
 
 definePage(
   (query, ctx) => {
@@ -127,6 +128,8 @@ definePage(
     }
 
     return {
+      flags: useFlags(),
+
       isSinglePage,
 
       // specialties: specialtiesLocal,
