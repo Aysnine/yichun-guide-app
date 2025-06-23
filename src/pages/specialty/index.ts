@@ -7,9 +7,12 @@ import {
 } from '@vue-mini/core';
 import { ResponseData, Specialty } from '@/types';
 import { useFlags } from '@/context/FlagsContext';
+import { useServer } from '@/context/ServerContext';
 
 definePage(
   (query, ctx) => {
+    const server = useServer();
+
     const launchOptions = wx.getLaunchOptionsSync();
     const isSinglePage = launchOptions.scene === 1154;
 
@@ -43,6 +46,7 @@ definePage(
 
     let fetching = false;
     fetching = true;
+
     void getData().then((data) => {
       specialties.value = data.data;
       fetching = false;
@@ -52,7 +56,7 @@ definePage(
       const res = await new Promise<ResponseData<Specialty[]>>(
         (resolve, reject) => {
           wx.request<ResponseData<Specialty[]>>({
-            url: 'https://yichun-guide-server.softfunny.com/api/specialties',
+            url: `${server.endpoint}/api/specialties`,
             method: 'GET',
             success: (res) => {
               const data = res.data;
@@ -61,7 +65,7 @@ definePage(
                   return '';
                 }
                 const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-                return `https://yichun-guide-server.softfunny.com/storage${cleanUrl}`;
+                return `${server.endpoint}/storage${cleanUrl}`;
               }
 
               data.data = data.data.map((item) => ({

@@ -7,9 +7,12 @@ import {
 } from '@vue-mini/core';
 import { Attraction, ResponseData } from '@/types';
 import { useFlags } from '@/context/FlagsContext';
+import { useServer } from '@/context/ServerContext';
 
 definePage(
   (_, ctx) => {
+    const server = useServer();
+
     const launchOptions = wx.getLaunchOptionsSync();
     const isSinglePage = launchOptions.scene === 1154;
 
@@ -44,7 +47,7 @@ definePage(
       const res = await new Promise<ResponseData<Attraction[]>>(
         (resolve, reject) => {
           wx.request<ResponseData<Attraction[]>>({
-            url: 'https://yichun-guide-server.softfunny.com/api/attractions?includeTickets=true',
+            url: `${server.endpoint}/api/attractions?includeTickets=true`,
             method: 'GET',
             success: (res) => {
               resolve(res.data);

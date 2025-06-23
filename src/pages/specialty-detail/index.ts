@@ -7,9 +7,12 @@ import {
 } from '@vue-mini/core';
 import { ResponseData, Specialty } from '@/types';
 import { useFlags } from '@/context/FlagsContext';
+import { useServer } from '@/context/ServerContext';
 
 definePage(
   (query) => {
+    const server = useServer();
+
     const launchOptions = wx.getLaunchOptionsSync();
     const isSinglePage = launchOptions.scene === 1154;
 
@@ -51,7 +54,7 @@ definePage(
         ResponseData<Specialty & { _images: string[] }>
       >((resolve, reject) => {
         wx.request<ResponseData<Specialty & { _images: string[] }>>({
-          url: `https://yichun-guide-server.softfunny.com/api/specialties/${specialtyId}`,
+          url: `${server.endpoint}/api/specialties/${specialtyId}`,
           method: 'GET',
           success: (res) => {
             const data = res.data;
@@ -60,7 +63,7 @@ definePage(
                 return '';
               }
               const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-              return `https://yichun-guide-server.softfunny.com/storage${cleanUrl}`;
+              return `${server.endpoint}/storage${cleanUrl}`;
             }
             data.data._images = data.data.images.map((image) =>
               storageUrl(image),

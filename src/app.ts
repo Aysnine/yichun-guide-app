@@ -5,19 +5,24 @@ import {
 } from './context/SystemInfoContext';
 import { provideFlags } from './context/FlagsContext';
 import { AppFlag, ResponseData } from './types';
+import { provideServer, ServerContextType } from './context/ServerContext';
 
 createApp(() => {
   const systemInfo = provideSystemInfo();
   const flags = provideFlags();
+  const server = provideServer(process.env.SERVER_ENDPOINT!);
 
-  void getFlag(systemInfo).then((appFlag) => {
+  void getFlag(systemInfo, server).then((appFlag) => {
     flags.privateInfusion = appFlag.features.privateInfusion;
   });
 
   console.log('App Launched!');
 });
 
-async function getFlag(systemInfo: SystemInfoContextType) {
+async function getFlag(
+  systemInfo: SystemInfoContextType,
+  server: ServerContextType,
+) {
   const res = await new Promise<AppFlag>((resolve, reject) => {
     const envMapping: Record<
       'develop' | 'trial' | 'release',
@@ -32,7 +37,7 @@ async function getFlag(systemInfo: SystemInfoContextType) {
     const version = systemInfo.onlineVersion;
 
     wx.request<ResponseData<AppFlag>>({
-      url: `https://yichun-guide-server.softfunny.com/api/flags?appType=wechat&appEnv=${env}&appVersion=${version}`,
+      url: `${server.endpoint}/api/flags?appType=wechat&appEnv=${env}&appVersion=${version}`,
       method: 'GET',
       success: (res) => {
         resolve(res.data.data);
