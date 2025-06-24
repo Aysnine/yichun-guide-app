@@ -1,3 +1,4 @@
+import { useFlags } from '@/context/FlagsContext';
 import { definePage } from '@vue-mini/core';
 
 definePage(() => {
@@ -21,6 +22,8 @@ definePage(() => {
   }
 
   return {
+    flags: useFlags(),
+
     openWxQrCodeUrl: process.env.OPEN_WX_QR_CODE_URL,
     mySelfWxQrCodeUrl: process.env.MY_SELF_WX_QR_CODE_URL,
     onClickOpenWx,
