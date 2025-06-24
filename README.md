@@ -1,6 +1,6 @@
 # yichun-guide-app
 
-**使用 vue-mini 开发，使用 create-vue-mini 创建。使用 Skyline 渲染，支持深色模式，数据库和文件存储使用微信小程序自带的云开发。**
+**使用 vue-mini 开发，使用 create-vue-mini 创建。使用 Skyline 渲染，支持深色模式。**
 
 ## 版本说明
 
