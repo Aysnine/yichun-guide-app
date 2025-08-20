@@ -24,12 +24,12 @@ definePage(
     });
     onShareAppMessage(() => {
       return {
-        title: '🌲🐿️伊春今日【门票价格】【优质特产】🫐🦌',
+        title: '🌲🐿️【门票价格】【优质特产】🫐🦌',
       };
     });
     onShareTimeline(() => {
       return {
-        title: '🌲🐿️伊春今日【景点门票】【优质特产】🫐🦌',
+        title: '🌲🐿️【景点门票】【优质特产】🫐🦌',
       };
     });
 

@@ -32,14 +32,14 @@ definePage(
 
     onShareAppMessage(() => {
       return {
-        title: `🌲🐿️🫐伊春特产【${specialty.value?.name}】${specialty.value?.highlight}`,
+        title: `【${specialty.value?.name}】${specialty.value?.highlight}`,
         path: '/pages/specialty/index?to=' + specialtyId,
         imageUrl: specialty.value?._images.at(0),
       };
     });
     onShareTimeline(() => {
       return {
-        title: `🌲🐿️🫐伊春特产【${specialty.value?.name}】${specialty.value?.highlight}`,
+        title: `【${specialty.value?.name}】${specialty.value?.highlight}`,
         query: 'back=list&specialtyId=' + specialtyId,
         imageUrl: specialty.value?._images.at(0),
       };

@@ -32,12 +32,12 @@ definePage(
     });
     onShareAppMessage(() => {
       return {
-        title: '🌲🐿️伊春今日优质特产🫐🦌',
+        title: '🌲🐿️优质特产🫐🦌',
       };
     });
     onShareTimeline(() => {
       return {
-        title: '🌲🐿️伊春今日优质特产🫐🦌',
+        title: '🌲🐿️优质特产🫐🦌',
       };
     });
 
