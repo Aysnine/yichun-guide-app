@@ -19,6 +19,8 @@ createApp(() => {
   console.log('App Launched!');
 });
 
+const CODE_VERSION = '1.1.5';
+
 async function getFlag(
   systemInfo: SystemInfoContextType,
   server: ServerContextType,
@@ -34,7 +36,7 @@ async function getFlag(
     };
 
     const env = envMapping[systemInfo.env];
-    const version = systemInfo.onlineVersion;
+    const version = systemInfo.onlineVersion || CODE_VERSION;
 
     wx.request<ResponseData<AppFlag>>({
       url: `${server.endpoint}/api/flags?appType=wechat&appEnv=${env}&appVersion=${version}`,
