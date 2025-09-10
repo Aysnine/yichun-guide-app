@@ -6,6 +6,7 @@ import {
 import { provideFlags } from './context/FlagsContext';
 import { AppFlag, ResponseData } from './types';
 import { provideServer, ServerContextType } from './context/ServerContext';
+import { CODE_VERSION } from './config';
 
 createApp(() => {
   const systemInfo = provideSystemInfo();
@@ -18,8 +19,6 @@ createApp(() => {
 
   console.log('App Launched!');
 });
-
-const CODE_VERSION = '1.1.6';
 
 async function getFlag(
   systemInfo: SystemInfoContextType,
@@ -36,7 +35,7 @@ async function getFlag(
     };
 
     const env = envMapping[systemInfo.env];
-    const version = systemInfo.onlineVersion || CODE_VERSION;
+    const version = CODE_VERSION;
 
     wx.request<ResponseData<AppFlag>>({
       url: `${server.endpoint}/api/flags?appType=wechat&appEnv=${env}&appVersion=${version}`,
