@@ -19,7 +19,7 @@ createApp(() => {
   console.log('App Launched!');
 });
 
-const CODE_VERSION = '1.1.5';
+const CODE_VERSION = '1.1.6';
 
 async function getFlag(
   systemInfo: SystemInfoContextType,
