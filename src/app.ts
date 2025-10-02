@@ -6,12 +6,12 @@ import {
 import { provideFlags } from './context/FlagsContext';
 import { AppFlag, ResponseData } from './types';
 import { provideServer, ServerContextType } from './context/ServerContext';
-import { CODE_VERSION } from './config';
+import { CODE_VERSION, SERVER_ENDPOINT } from './config';
 
 createApp(() => {
   const systemInfo = provideSystemInfo();
   const flags = provideFlags();
-  const server = provideServer(process.env.SERVER_ENDPOINT!);
+  const server = provideServer(SERVER_ENDPOINT);
 
   void getFlag(systemInfo, server).then((appFlag) => {
     flags.privateInfusion = appFlag.features.privateInfusion;
