@@ -1,4 +1,4 @@
-export const CODE_VERSION = '1.1.7';
+export const CODE_VERSION = '1.1.8';
 
 const accountInfo = wx.getAccountInfoSync();
 
