@@ -13,6 +13,52 @@ export type SystemInfoContextType = {
 
 const systemInfoContextSymbol = Symbol('systemInfo');
 
+function isWxApiSupported(apiName: string) {
+  return typeof wx.canIUse === 'function' ? wx.canIUse(apiName) : false;
+}
+
+function getCompatibleSystemInfo() {
+  const appBaseInfo = isWxApiSupported('getAppBaseInfo')
+    ? wx.getAppBaseInfo()
+    : null;
+  const deviceInfo = isWxApiSupported('getDeviceInfo')
+    ? wx.getDeviceInfo()
+    : null;
+  const windowInfo = isWxApiSupported('getWindowInfo')
+    ? wx.getWindowInfo()
+    : null;
+
+  if (appBaseInfo && deviceInfo && windowInfo) {
+    return {
+      theme: appBaseInfo.theme,
+      model: deviceInfo.model,
+      windowWidth: windowInfo.windowWidth,
+      statusBarHeight: windowInfo.statusBarHeight,
+    };
+  }
+
+  const legacySystemInfo =
+    typeof wx.getSystemInfoSync === 'function' ? wx.getSystemInfoSync() : null;
+
+  return {
+    theme: appBaseInfo?.theme ?? legacySystemInfo?.theme ?? 'light',
+    model: deviceInfo?.model ?? legacySystemInfo?.model ?? '',
+    windowWidth: windowInfo?.windowWidth ?? legacySystemInfo?.windowWidth ?? 0,
+    statusBarHeight:
+      windowInfo?.statusBarHeight ?? legacySystemInfo?.statusBarHeight ?? 0,
+  };
+}
+
+function getCompatibleEnvVersion(): SystemInfoContextType['env'] {
+  const envVersion = wx.getAccountInfoSync?.().miniProgram?.envVersion;
+
+  if (envVersion === 'develop' || envVersion === 'trial' || envVersion === 'release') {
+    return envVersion;
+  }
+
+  return 'develop';
+}
+
 export function provideSystemInfo() {
   const systemInfo = reactive<SystemInfoContextType>({
     theme: 'light',
@@ -25,9 +71,8 @@ export function provideSystemInfo() {
     env: 'develop',
   });
 
-  const { theme } = wx.getAppBaseInfo();
-  const { model } = wx.getDeviceInfo();
-  const { windowWidth, statusBarHeight } = wx.getWindowInfo();
+  const { theme, model, windowWidth, statusBarHeight } =
+    getCompatibleSystemInfo();
 
   systemInfo.theme = theme ?? 'light';
   const rect = wx.getMenuButtonBoundingClientRect();
@@ -40,8 +85,7 @@ export function provideSystemInfo() {
   systemInfo.windowWidth = windowWidth;
   systemInfo.horizontalPadding = windowWidth - rect.right;
 
-  const accountInfo = wx.getAccountInfoSync();
-  systemInfo.env = accountInfo.miniProgram.envVersion;
+  systemInfo.env = getCompatibleEnvVersion();
 
   provide(systemInfoContextSymbol, systemInfo);
 
