@@ -5,14 +5,11 @@ import {
   onShow,
   ref,
 } from '@vue-mini/core';
-import { Attraction, ResponseData } from '@/types';
 import { useFlags } from '@/context/FlagsContext';
-import { useServer } from '@/context/ServerContext';
+import { useAttractionsQuery } from '@/hooks/useAttractionsQuery';
 
 definePage(
   (_, ctx) => {
-    const server = useServer();
-
     const launchOptions = wx.getLaunchOptionsSync();
     const isSinglePage = launchOptions.scene === 1154;
 
@@ -33,65 +30,28 @@ definePage(
       };
     });
 
-    const touristAttractions = ref<Attraction[]>([]);
-    const refreshTriggered = ref(false);
-
-    let fetching = false;
-    fetching = true;
-    void getData().then((data) => {
-      touristAttractions.value = data;
-      fetching = false;
+    const { attractionsQuery, attractions } = useAttractionsQuery({
+      includeTickets: true,
     });
+    // const fetching = computed(() => attractionsQuery.value.isLoading);
+    // const isError = computed(() => attractionsQuery.value.isError);
 
-    async function getData() {
-      const res = await new Promise<ResponseData<Attraction[]>>(
-        (resolve, reject) => {
-          wx.request<ResponseData<Attraction[]>>({
-            url: `${server.endpoint}/api/attractions?includeTickets=true`,
-            method: 'GET',
-            success: (res) => {
-              resolve(res.data);
-            },
-            fail: (err) => {
-              reject(new Error(err.errMsg));
-            },
-          });
-        },
-      );
-
-      return res.data;
-    }
-
+    const refreshTriggered = ref(false);
     function onRefresh() {
       console.log('onRefresh');
-      if (fetching) {
-        return;
-      }
       refreshTriggered.value = true;
-
-      // TODO can't restore refresher
-      setTimeout(() => {
-        getData()
-          .then((data) => {
-            touristAttractions.value = data;
-            fetching = false;
-            refreshTriggered.value = false;
-          })
-          .catch(() => {
-            fetching = false;
-            refreshTriggered.value = false;
-          });
-      }, 1000);
+      void attractionsQuery.value.refetch().finally(() => {
+        refreshTriggered.value = false;
+      });
     }
 
-    function onClickTouristAttraction(event: {
-      currentTarget: { dataset: { touristAttractionId: string } };
+    function onClickAttraction(event: {
+      currentTarget: { dataset: { attractionId: string } };
     }) {
-      const touristAttractionId =
-        event.currentTarget?.dataset.touristAttractionId;
+      const attractionId = event.currentTarget?.dataset.attractionId;
 
       void wx.navigateTo({
-        url: `/pages/tourist-attraction-detail/index?touristAttractionId=${touristAttractionId}`,
+        url: `/pages/tourist-attraction-detail/index?touristAttractionId=${attractionId}`,
       });
     }
 
@@ -115,14 +75,14 @@ definePage(
 
       isSinglePage,
 
-      touristAttractions,
+      attractions,
 
       refreshTriggered,
       onRefresh,
       onPulling: () => console.log('onPulling'),
       onRestore: () => console.log('onRestore'),
       onAbort: () => console.log('onAbort'),
-      onClickTouristAttraction,
+      onClickAttraction,
       onCallPhone,
       onContact,
     };

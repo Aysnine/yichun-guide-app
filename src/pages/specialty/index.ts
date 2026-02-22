@@ -5,14 +5,11 @@ import {
   onShow,
   ref,
 } from '@vue-mini/core';
-import { ResponseData, Specialty } from '@/types';
 import { useFlags } from '@/context/FlagsContext';
-import { useServer } from '@/context/ServerContext';
+import { useSpecialtiesQuery } from '@/hooks/useSpecialtiesQuery';
 
 definePage(
   (query, ctx) => {
-    const server = useServer();
-
     const launchOptions = wx.getLaunchOptionsSync();
     const isSinglePage = launchOptions.scene === 1154;
 
@@ -41,69 +38,16 @@ definePage(
       };
     });
 
-    const specialties = ref<Specialty[]>([]);
+    const { specialtiesQuery, specialties } = useSpecialtiesQuery();
     const refreshTriggered = ref(false);
-
-    let fetching = false;
-    fetching = true;
-
-    void getData().then((data) => {
-      specialties.value = data.data;
-      fetching = false;
-    });
-
-    async function getData() {
-      const res = await new Promise<ResponseData<Specialty[]>>(
-        (resolve, reject) => {
-          wx.request<ResponseData<Specialty[]>>({
-            url: `${server.endpoint}/api/specialties`,
-            method: 'GET',
-            success: (res) => {
-              const data = res.data;
-              function storageUrl(url: string) {
-                if (!url) {
-                  return '';
-                }
-                const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-                return `${server.endpoint}/storage${cleanUrl}`;
-              }
-
-              data.data = data.data.map((item) => ({
-                ...item,
-                _images: item.images.map((image) => storageUrl(image)),
-              }));
-              resolve(data);
-            },
-            fail: (err) => {
-              reject(new Error(err.errMsg));
-            },
-          });
-        },
-      );
-
-      return res;
-    }
 
     function onRefresh() {
       console.log('onRefresh');
-      if (fetching) {
-        return;
-      }
       refreshTriggered.value = true;
 
-      // TODO can't restore refresher
-      setTimeout(() => {
-        getData()
-          .then((data) => {
-            specialties.value = data.data;
-            fetching = false;
-            refreshTriggered.value = false;
-          })
-          .catch(() => {
-            fetching = false;
-            refreshTriggered.value = false;
-          });
-      }, 1000);
+      void specialtiesQuery.value.refetch().finally(() => {
+        refreshTriggered.value = false;
+      });
     }
 
     function onClickSpecialty(event: {

@@ -3,16 +3,12 @@ import {
   definePage,
   onShareAppMessage,
   onShareTimeline,
-  ref,
 } from '@vue-mini/core';
-import { ResponseData, Specialty } from '@/types';
 import { useFlags } from '@/context/FlagsContext';
-import { useServer } from '@/context/ServerContext';
+import { useSpecialtyDetailQuery } from '@/hooks/useSpecialtyDetailQuery';
 
 definePage(
   (query) => {
-    const server = useServer();
-
     const launchOptions = wx.getLaunchOptionsSync();
     const isSinglePage = launchOptions.scene === 1154;
 
@@ -25,7 +21,7 @@ definePage(
       });
     }
 
-    const specialty = ref<(Specialty & { _images: string[] }) | null>(null);
+    const { specialty } = useSpecialtyDetailQuery(specialtyId);
     const imageUrls = computed(() => {
       return specialty.value?._images ?? [];
     });
@@ -44,39 +40,6 @@ definePage(
         imageUrl: specialty.value?._images.at(0),
       };
     });
-
-    void getData().then((data) => {
-      specialty.value = data;
-    });
-
-    async function getData() {
-      const res = await new Promise<
-        ResponseData<Specialty & { _images: string[] }>
-      >((resolve, reject) => {
-        wx.request<ResponseData<Specialty & { _images: string[] }>>({
-          url: `${server.endpoint}/api/specialties/${specialtyId}`,
-          method: 'GET',
-          success: (res) => {
-            const data = res.data;
-            function storageUrl(url: string) {
-              if (!url) {
-                return '';
-              }
-              const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-              return `${server.endpoint}/storage${cleanUrl}`;
-            }
-            data.data._images = data.data.images.map((image) =>
-              storageUrl(image),
-            );
-            resolve(data);
-          },
-          fail: (err) => {
-            reject(new Error(err.errMsg));
-          },
-        });
-      });
-      return res.data;
-    }
 
     function onCallPhone(event: {
       currentTarget: { dataset: { phone: string } };

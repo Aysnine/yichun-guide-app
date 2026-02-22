@@ -33,8 +33,8 @@
     </sticky-header>
 
     <list-view>
-      <view wx:for="{{touristAttractions}}" wx:key="id" style="margin-bottom: 16px">
-        <view class="face" data-tourist-attraction-id="{{item.id}}" TODO-bindtap="onClickTouristAttraction">
+      <view wx:for="{{attractions}}" wx:key="id" style="margin-bottom: 16px">
+        <view class="face" data-attraction-id="{{item.id}}" TODO-bindtap="onClickAttraction">
           <view class="text-main" style="padding: 8px; font-size: 1.2rem">{{item.name}}</view>
           <!-- <view wx:if="{{item.notice}}" style="padding: 8px; font-size: 1rem; color: red; background-color: #ff020222;">{{item.notice}}</view> -->
           <rich-text class="text-desc" style="padding: 8px 8px 0px; padding-left: 38px" nodes="{{item.description}}"></rich-text>

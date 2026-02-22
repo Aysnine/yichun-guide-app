@@ -4,14 +4,19 @@ import {
   SystemInfoContextType,
 } from './context/SystemInfoContext';
 import { provideFlags } from './context/FlagsContext';
-import { AppFlag, ResponseData } from './types';
+import { requestAppFlag } from './api/flags';
 import { provideServer, ServerContextType } from './context/ServerContext';
 import { CODE_VERSION, SERVER_ENDPOINT } from './config';
+import { provideQueryClient } from './lib/vue-mini-query';
+
+import '@/lib/vue-mini-query/polyfill';
 
 createApp(() => {
   const systemInfo = provideSystemInfo();
   const flags = provideFlags();
   const server = provideServer(SERVER_ENDPOINT);
+
+  provideQueryClient();
 
   void getFlag(systemInfo, server).then((appFlag) => {
     flags.privateInfusion = appFlag.features.privateInfusion;
@@ -24,29 +29,20 @@ async function getFlag(
   systemInfo: SystemInfoContextType,
   server: ServerContextType,
 ) {
-  const res = await new Promise<AppFlag>((resolve, reject) => {
-    const envMapping: Record<
-      'develop' | 'trial' | 'release',
-      'dev' | 'test' | 'prod'
-    > = {
-      develop: 'dev',
-      trial: 'test',
-      release: 'prod',
-    };
+  const envMapping: Record<'develop' | 'trial' | 'release', 'dev' | 'test' | 'prod'> = {
+    develop: 'dev',
+    trial: 'test',
+    release: 'prod',
+  };
 
-    const env = envMapping[systemInfo.env];
-    const version = CODE_VERSION;
+  const env = envMapping[systemInfo.env];
+  const version = CODE_VERSION;
 
-    wx.request<ResponseData<AppFlag>>({
-      url: `${server.endpoint}/api/flags?appType=wechat&appEnv=${env}&appVersion=${version}`,
-      method: 'GET',
-      success: (res) => {
-        resolve(res.data.data);
-      },
-      fail: (err) => {
-        reject(new Error(err.errMsg));
-      },
-    });
+  const res = await requestAppFlag({
+    endpoint: server.endpoint,
+    appType: 'wechat',
+    appEnv: env,
+    appVersion: version,
   });
 
   console.log(res);
