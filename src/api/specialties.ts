@@ -32,7 +32,9 @@ function toStorageUrl(endpoint: string, url: string) {
   return buildUrl(endpoint, `/storage${cleanUrl}`);
 }
 
-export async function requestSpecialties({ endpoint }: RequestSpecialtiesParams) {
+export async function requestSpecialties({
+  endpoint,
+}: RequestSpecialtiesParams) {
   const url = buildUrl(endpoint, '/api/specialties');
 
   const res = await requestApi<Specialty[]>({

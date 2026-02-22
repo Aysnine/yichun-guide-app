@@ -5,8 +5,10 @@ import prettier from 'eslint-config-prettier';
 
 const config = [
   {
+    ignores: ['dist/', 'coverage/'],
+  },
+  {
     files: ['**/*.js', '**/*.ts'],
-    ignores: ['dist/**/*'],
     linterOptions: {
       reportUnusedDisableDirectives: true,
     },
@@ -17,6 +19,9 @@ const config = [
     languageOptions: {
       globals: {
         ...globals.node,
+        wx: 'readonly',
+        getApp: 'readonly',
+        getCurrentPages: 'readonly',
       },
     },
     ...prettier,

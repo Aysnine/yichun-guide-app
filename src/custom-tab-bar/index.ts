@@ -11,9 +11,7 @@ defineComponent({
     const { theme } = useSystemInfo();
 
     const config = computed(() =>
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       deepReplaceValue(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         app.tabBar,
         (
           themes as {

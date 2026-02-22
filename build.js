@@ -1,3 +1,8 @@
+/**
+ * @version v1.4.3
+ * https://github.com/vue-mini/create-vue-mini
+ * 请谨慎修改此文件，改动过多可能会导致你后续升级困难。
+ */
 import path from 'node:path';
 import process from 'node:process';
 import fs from 'fs-extra';
@@ -14,6 +19,8 @@ import terser from '@rollup/plugin-terser';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { green, bold } from 'kolorist';
+import { getPackageInfo } from 'local-pkg';
+
 import dotEnv from 'dotenv';
 
 dotEnv.config({ path: ['.env.local', '.env'] });
@@ -30,37 +37,41 @@ const terserOptions = {
   format: { comments: false },
 };
 
-async function resolvePeer(module) {
-  if (!module) return;
-
-  try {
-    const pkg = await fs.readJson(
-      path.resolve('node_modules', module, 'package.json'),
-      'utf8',
-    );
-    return pkg.peerDependencies;
-  } catch {
-    const arr = module.split('/');
-    arr.pop();
-    return resolvePeer(arr.join('/'));
+let independentPackages = [];
+async function findIndependentPackages() {
+  const { subpackages } = await fs.readJson(
+    path.resolve('src', 'app.json'),
+    'utf8',
+  );
+  if (subpackages) {
+    independentPackages = subpackages
+      .filter(({ independent }) => independent)
+      .map(({ root }) => root);
   }
 }
 
 const builtLibraries = [];
-const bundledModules = new Set();
-async function bundleModule(module) {
+const bundledModules = new Map();
+async function bundleModule(module, pkg) {
+  const bundled = bundledModules.get(pkg);
   if (
-    bundledModules.has(module) ||
+    bundled?.has(module) ||
     builtLibraries.some((library) => module.startsWith(library))
   ) {
-    return;
+    return false;
   }
-  bundledModules.add(module);
+  if (bundled) {
+    bundled.add(module);
+  } else {
+    bundledModules.set(pkg, new Set([module]));
+  }
 
-  const peer = await resolvePeer(module);
+  const {
+    packageJson: { peerDependencies },
+  } = await getPackageInfo(module);
   const bundle = await rollup({
     input: module,
-    external: peer ? Object.keys(peer) : undefined,
+    external: peerDependencies ? Object.keys(peerDependencies) : undefined,
     plugins: [
       commonjs(),
       replace({
@@ -75,12 +86,13 @@ async function bundleModule(module) {
   });
   await bundle.write({
     exports: 'named',
-    file: `dist/miniprogram_npm/${module}/index.js`,
+    file: `${pkg.replace('src', 'dist')}/miniprogram_npm/${module}/index.js`,
     format: 'cjs',
   });
+  return true;
 }
 
-function traverseAST(ast, babelOnly = false) {
+function traverseAST(ast, pkg, babelOnly = false) {
   traverse.default(ast, {
     CallExpression({ node }) {
       if (
@@ -92,25 +104,44 @@ function traverseAST(ast, babelOnly = false) {
         return;
       }
 
-      const promise = bundleModule(node.arguments[0].value);
+      const module = node.arguments[0].value;
+      let promise = bundleModule(module, pkg);
+      if (babelOnly) {
+        promise = promise.then((valid) => {
+          if (!valid) return;
+          return Promise.all(
+            independentPackages.map((item) => {
+              const bundled = bundledModules.get(item);
+              if (bundled) {
+                bundled.add(module);
+              } else {
+                bundledModules.set(pkg, new Set([module]));
+              }
+              return fs.copy(
+                path.resolve('dist', 'miniprogram_npm', module),
+                path.resolve('dist', item, 'miniprogram_npm', module),
+              );
+            }),
+          );
+        });
+      }
       bundleJobs?.push(promise);
     },
   });
 }
 
 async function buildComponentLibrary(name) {
-  const libPath = path.resolve('node_modules', name);
-  const { miniprogram } = await fs.readJson(
-    path.join(libPath, 'package.json'),
-    'utf8',
-  );
+  const {
+    rootPath,
+    packageJson: { miniprogram },
+  } = await getPackageInfo(name);
 
   let source = '';
   if (miniprogram) {
-    source = path.join(libPath, miniprogram);
+    source = path.join(rootPath, miniprogram);
   } else {
     try {
-      const dist = path.join(libPath, 'miniprogram_dist');
+      const dist = path.join(rootPath, 'miniprogram_dist');
       const stats = await fs.stat(dist);
       if (stats.isDirectory()) {
         source = dist;
@@ -130,7 +161,7 @@ async function buildComponentLibrary(name) {
     const jobs = [];
     const tnm = async (filePath) => {
       const result = await babel.transformFileAsync(filePath, { ast: true });
-      traverseAST(result.ast, true);
+      traverseAST(result.ast, 'src', true);
       const code = __PROD__
         ? (await minify(result.code, terserOptions)).code
         : result.code;
@@ -138,10 +169,9 @@ async function buildComponentLibrary(name) {
     };
 
     const watcher = chokidar.watch([destination], {
-      ignored: ['**/.{gitkeep,DS_Store}'],
+      ignored: (file, stats) => stats?.isFile() && !file.endsWith('.js'),
     });
     watcher.on('add', (filePath) => {
-      if (!filePath.endsWith('.js')) return;
       const promise = tnm(filePath);
       jobs.push(promise);
     });
@@ -149,6 +179,16 @@ async function buildComponentLibrary(name) {
       const promise = watcher.close();
       jobs.push(promise);
       await Promise.all(jobs);
+      if (independentPackages.length > 0) {
+        await Promise.all(
+          independentPackages.map((item) =>
+            fs.copy(
+              destination,
+              path.resolve('dist', item, 'miniprogram_npm', name),
+            ),
+          ),
+        );
+      }
       resolve();
     });
   });
@@ -179,23 +219,11 @@ async function processScript(filePath) {
     return;
   }
 
-  if (filePath.endsWith('app.ts')) {
-    /**
-     * IOS 小程序 Promise 使用的内置的 Polyfill，但这个 Polyfill 有 Bug 且功能不全，
-     * 在某些情况下 Promise 回调不会执行，并且不支持 Promise.prototype.finally。
-     * 这里将全局的 Promise 变量重写为自定义的 Polyfill，如果你不需要兼容 iOS10 也可以使用以下方式：
-     * Promise = Object.getPrototypeOf((async () => {})()).constructor;
-     * 写在此处是为了保证 Promise 重写最先被执行。
-     */
-    code = code.replace(
-      '"use strict";',
-      '"use strict";\n\nvar PromisePolyfill = require("promise-polyfill");\nPromise = PromisePolyfill.default;',
-    );
-    const promise = bundleModule('promise-polyfill');
-    bundleJobs?.push(promise);
-  }
-
-  traverseAST(ast);
+  const pkg = independentPackages.find((item) =>
+    filePath.startsWith(path.normalize(`src/${item}`)),
+  );
+  // The `src/` prefix is added to to distinguish `src` and `src/src`.
+  traverseAST(ast, pkg ? `src/${pkg}` : 'src');
 
   if (__PROD__) {
     code = (await minify(code, terserOptions)).code;
@@ -233,7 +261,7 @@ async function processTemplate(filePath) {
 
 async function processStyle(filePath) {
   const source = await fs.readFile(filePath, 'utf8');
-  const { plugins, options } = await postcssrc({ from: undefined });
+  const { plugins, options } = await postcssrc({ from: filePath });
 
   let css;
   try {
@@ -257,7 +285,7 @@ async function processStyle(filePath) {
 }
 
 const cb = async (filePath) => {
-  if (filePath.endsWith('.ts')) {
+  if (filePath.endsWith('.ts') || filePath.endsWith('.js')) {
     await processScript(filePath);
     return;
   }
@@ -281,10 +309,13 @@ const cb = async (filePath) => {
 
 async function dev() {
   await fs.remove('dist');
+  await findIndependentPackages();
   await scanDependencies();
   chokidar
     .watch(['src'], {
-      ignored: ['**/.{gitkeep,DS_Store}'],
+      ignored: (file, stats) =>
+        stats?.isFile() &&
+        (file.endsWith('.gitkeep') || file.endsWith('.DS_Store')),
     })
     .on('add', (filePath) => {
       const promise = cb(filePath);
@@ -306,9 +337,12 @@ async function dev() {
 
 async function prod() {
   await fs.remove('dist');
+  await findIndependentPackages();
   await scanDependencies();
   const watcher = chokidar.watch(['src'], {
-    ignored: ['**/.{gitkeep,DS_Store}'],
+    ignored: (file, stats) =>
+      stats?.isFile() &&
+      (file.endsWith('.gitkeep') || file.endsWith('.DS_Store')),
   });
   watcher.on('add', (filePath) => {
     const promise = cb(filePath);

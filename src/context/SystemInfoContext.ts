@@ -52,7 +52,11 @@ function getCompatibleSystemInfo() {
 function getCompatibleEnvVersion(): SystemInfoContextType['env'] {
   const envVersion = wx.getAccountInfoSync?.().miniProgram?.envVersion;
 
-  if (envVersion === 'develop' || envVersion === 'trial' || envVersion === 'release') {
+  if (
+    envVersion === 'develop' ||
+    envVersion === 'trial' ||
+    envVersion === 'release'
+  ) {
     return envVersion;
   }
 

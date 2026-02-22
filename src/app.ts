@@ -29,7 +29,10 @@ async function getFlag(
   systemInfo: SystemInfoContextType,
   server: ServerContextType,
 ) {
-  const envMapping: Record<'develop' | 'trial' | 'release', 'dev' | 'test' | 'prod'> = {
+  const envMapping: Record<
+    'develop' | 'trial' | 'release',
+    'dev' | 'test' | 'prod'
+  > = {
     develop: 'dev',
     trial: 'test',
     release: 'prod',

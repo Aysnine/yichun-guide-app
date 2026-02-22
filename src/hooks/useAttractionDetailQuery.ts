@@ -4,10 +4,7 @@ import { Attraction, requestAttractionDetail } from '@/api/attractions';
 import { useServer } from '@/context/ServerContext';
 import { useQuery } from '@/lib/vue-mini-query';
 
-type AttractionDetailQueryKey = [
-  'attraction-detail',
-  { attractionId: string },
-];
+type AttractionDetailQueryKey = ['attraction-detail', { attractionId: string }];
 
 export function useAttractionDetailQuery(attractionId: string) {
   const server = useServer();

@@ -46,11 +46,7 @@ export function buildUrl(
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
   const queryString =
-    typeof query === 'string'
-      ? query
-      : query
-        ? buildQuery(query)
-        : '';
+    typeof query === 'string' ? query : query ? buildQuery(query) : '';
 
   return `${normalizedEndpoint}${normalizedPath}${queryString}`;
 }

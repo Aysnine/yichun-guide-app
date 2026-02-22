@@ -1,4 +1,8 @@
-import { focusManager, notifyManager, onlineManager } from '@tanstack/query-core';
+import {
+  focusManager,
+  notifyManager,
+  onlineManager,
+} from '@tanstack/query-core';
 
 const _global = typeof globalThis !== 'undefined' ? globalThis : global;
 
@@ -11,11 +15,17 @@ if (typeof _global.AbortController === 'undefined') {
       this.aborted = false;
       this.listeners = {};
     }
-    addEventListener(type: string, listener: (event: { type: string }) => void) {
+    addEventListener(
+      type: string,
+      listener: (event: { type: string }) => void,
+    ) {
       if (!this.listeners[type]) this.listeners[type] = [];
       this.listeners[type].push(listener);
     }
-    removeEventListener(type: string, listener: (event: { type: string }) => void) {
+    removeEventListener(
+      type: string,
+      listener: (event: { type: string }) => void,
+    ) {
       if (!this.listeners[type]) return;
       this.listeners[type] = this.listeners[type].filter((l) => l !== listener);
     }

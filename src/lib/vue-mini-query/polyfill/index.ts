@@ -1,1 +1,1 @@
-import './AbortSignal'
+import './AbortSignal';

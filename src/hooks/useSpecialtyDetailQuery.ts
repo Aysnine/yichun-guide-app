@@ -4,10 +4,7 @@ import { requestSpecialtyDetail, SpecialtyWithImages } from '@/api/specialties';
 import { useServer } from '@/context/ServerContext';
 import { useQuery } from '@/lib/vue-mini-query';
 
-type SpecialtyDetailQueryKey = [
-  'specialty-detail',
-  { specialtyId: string },
-];
+type SpecialtyDetailQueryKey = ['specialty-detail', { specialtyId: string }];
 
 export function useSpecialtyDetailQuery(specialtyId: string) {
   const server = useServer();
