@@ -72,6 +72,10 @@ const attractionsQuery = useQuery({
 - `src/hooks`：对 api 的封装，状态由 tanstack query 进行统一管理
 - `src/pages`：尽可能使用 hooks 去请求
 
+### 打包上传问题
+
+由于 `dist/@tanstack/query-core/index.js` 中使用了比较新的语法，如 `class #foo` 私有成员，小程序打包上传时会报错，可以在微信开发者工具的详情设置里勾选“将 JS 编译成 ES5” 来解决。
+
 ## 开发
 
 ⚠️ 注意：将此项目导入微信开发者工具时请选择项目根目录而非 `dist` 目录。
