@@ -12,6 +12,66 @@
 
 **源码仅供学习交流，欢迎 Star 和 Fork。**
 
+## 关于 Tanstack Query 集成
+
+当前项目集成了 Tanstack Query，其拥有强大的异步状态管理、服务器状态工具和数据获取功能。
+
+由于 `@tanstack/vue-query` 无法直接使用，所以当前项目是基于 `@tanstack/query-core` 实现的，只有简单的封装，集成时的版本是 `5.90.20`。
+
+集成代码：[src/lib/vue-mini-query](./src/lib/vue-mini-query/index.ts)
+
+### 基本原理
+
+在 `app.ts` 里注入 `queryClient` 实例：
+
+```ts
+// ! 由于小程序里不支持 AbortSignal，需要 polyfill
+import '@/lib/vue-mini-query/polyfill';
+
+createApp(() => {
+  // ...
+
+  // 全局注入 queryClient
+  provideQueryClient();
+
+  console.log('App Launched!');
+});
+```
+
+在页面或组件中使用 `useQuery`：
+
+```ts
+import { useQuery } from '@/lib/vue-mini-query';
+
+const attractionsQuery = useQuery({
+  queryKey: ['attractions', { query: { includeTickets } }],
+  queryFn: fetchAttractions,
+});
+```
+
+### API 封装
+
+- [x] provideQueryClient()
+- [x] useQueryClient()
+- [x] useQuery<T>()
+- [ ] useMutation<T>()
+- ...
+
+### 当前项目实践
+
+原来的 API 调用方式：ui -> api
+
+现在的 API 调用方式：ui -> hooks -> api
+
+两种调用方式可以并存。
+
+代码结构：
+
+- `src/api`：函数式的后端 API 调用封装
+- `src/api/base`：封装了 `requestApi()`，支持 AbortSignal
+- `src/hooks`：对 api 的封装，状态由 tanstack query 进行统一管理
+- `src/pages`：尽可能使用 hooks 去请求
+
 ## 开发
 
 ⚠️ 注意：将此项目导入微信开发者工具时请选择项目根目录而非 `dist` 目录。
