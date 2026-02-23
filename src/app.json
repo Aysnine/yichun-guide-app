@@ -10,14 +10,6 @@
       "defaultContentBox": true
     }
   },
-  "window": {
-    "navigationBarBackgroundColor": "@bgColor",
-    "navigationBarTextStyle": "@style",
-    "navigationBarTitleText": "yichun-guide-app",
-    "backgroundColor": "@bgColor",
-    "backgroundColorTop": "@bgColor",
-    "backgroundColorBottom": "@bgColor"
-  },
   "pages": [
     "pages/home/index",
     "pages/tourist-attraction-detail/index",
